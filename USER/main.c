@@ -2,18 +2,19 @@
 #include "usart.h"
 #include "delay.h"
 #include "led.h"
+#include "motor.h"
 
 int main(void)
 {
 	u32 t=0;
+	delay_init(168);
 	uart_init(115200);
-	delay_init(84);
 	LED_Init();
+	motors_init();
 	
   while(1){
-    printf("t:%d\r\n",t);
+    printf("b");
 		delay_ms(500);
 		LED_RunFlash();
-		t++;
 	}
 }
