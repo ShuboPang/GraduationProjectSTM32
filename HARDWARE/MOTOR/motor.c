@@ -4,7 +4,7 @@
 motorPulse[0] : 实时脉冲数 ；
 motorPulse[1] : 目标脉冲数 ;
 motorPulse[2] : 电机速度；
-motorPulse[3] : 正极限 ;
+motorPulse[3] : 方向 ;
 motorPulse[4] : 正极限 ;
 motorPulse[5] : 负极限；
 */
@@ -95,6 +95,26 @@ u32 getMotorPulse(unsigned char id)
 	if (id >= MOTOR_START_NUM && id <= MOTOR_NUM)
 	{
 		return motorPulse[0][id - MOTOR_START_NUM];
+	}
+	return 0;
+}
+
+//获取电机目标脉冲数
+u32 getMotorEndPulse(unsigned char id)
+{
+	if (id >= MOTOR_START_NUM && id <= MOTOR_NUM)
+	{
+		return motorPulse[1][id - MOTOR_START_NUM];
+	}
+	return 0;
+}
+
+//获取电机速度
+u32 getMotorSpeed(unsigned char id)
+{
+	if (id >= MOTOR_START_NUM && id <= MOTOR_NUM)
+	{
+		return motorPulse[2][id - MOTOR_START_NUM];
 	}
 	return 0;
 }

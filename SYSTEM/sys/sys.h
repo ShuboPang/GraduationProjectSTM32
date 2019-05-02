@@ -14,7 +14,16 @@
 //1,支持ucos
 #define SYSTEM_SUPPORT_UCOS		0		//定义系统文件夹是否支持UCOS
 																	    
-	 
+
+
+#define uint8 unsigned char
+#define uint16 unsigned short
+#define uint32 unsigned long
+#define int8 char
+#define int16 short
+#define int32 long
+
+
 //位带操作,实现51类似的GPIO控制功能
 //具体实现思想,参考<<CM3权威指南>>第五章(87页~92页).M4同M3类似,只是寄存器地址变了.
 //IO口操作宏定义

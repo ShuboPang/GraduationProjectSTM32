@@ -2,8 +2,7 @@
 //////////////////////////////////////////////////////////////////////////////////	 
  
 //LED驱动代码	   
-//STM32F4工程-库函数版本
-//淘宝店铺：http://mcudev.taobao.com									  
+//STM32F4工程-库函数版本								  
 ////////////////////////////////////////////////////////////////////////////////// 	 
 
 //初始化PF9和PF10为输出口.并使能这两个口的时钟		    
@@ -28,17 +27,17 @@ void LED_Init(void)
 
 void LED_RunFlash(void)
 {
-	static unsigned char i = 0;
-	if( i  == 0)
+	static u32 i = 0;
+	if( i  >= 500 && i < 1000)
 	{
 		GPIO_SetBits(GPIOA,GPIO_Pin_6);
-		i = 1;
 	}
-	else
+	else if(i >= 1000 )
 	{
 		GPIO_ResetBits(GPIOA,GPIO_Pin_6);
 		i = 0;
 	}
+	i++;
 }
 
 

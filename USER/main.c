@@ -3,18 +3,23 @@
 #include "delay.h"
 #include "led.h"
 #include "motor.h"
+#include "timer.h"
 
-int main(void)
+void sys_init()
 {
-	u32 t=0;
 	delay_init(168);
 	uart_init(115200);
 	LED_Init();
 	motors_init();
-	
-  while(1){
-    printf("b");
+	TIM3_Int_Init(10 - 1, 8400 - 1);	//定时器时钟84M，分频系数8400，所以84M/8400=10Khz的计数频率，计数10次为1ms 
+}
+
+int main(void)
+{
+	u32 t=0;
+	sys_init();
+	while(1)
+	{
 		delay_ms(500);
-		LED_RunFlash();
 	}
 }
