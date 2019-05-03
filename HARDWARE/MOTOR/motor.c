@@ -11,6 +11,10 @@ motorPulse[5] : 负极限；
 */
 static u32 motorPulse[6][MOTOR_NUM] = { 0 };
 
+
+//运动结束标志位
+static u8 motorEnd[MOTOR_NUM] = { 0 };
+
 //所有电机端口初始化
 void motors_init(void)
 {
@@ -30,6 +34,7 @@ void motors_init(void)
 	
 }
 
+//电机使能
 void motorSetEn(unsigned char id, unsigned char flag)
 {
 	switch (id)
@@ -48,6 +53,8 @@ void motorSetEn(unsigned char id, unsigned char flag)
 	}
 }
 
+
+//设置当前位置为原点
 void setOrigin(unsigned char id)
 {
 	if (id >= 1 && id <= 3)
@@ -191,6 +198,23 @@ void emergencyStop()
 }
 
 
+//获取某个电机是否移动结束
+u8 getMotorIsEnd(u8 id)
+{
+	if (id >= MOTOR_START_NUM && id <= MOTOR_NUM)
+	{
+		return motorEnd[id - MOTOR_START_NUM];
+	}
+}
+
+
+//获取全部电机是否移动结束
+u8 getMotorsIsEnd()
+{
+	return motorEnd[0] && motorEnd[1] && motorEnd[1];
+}
+
+
 //检查是否超出极限
 static void checkLImit(void)
 {
@@ -230,6 +254,8 @@ static void setMotorPulse(void)
 	{
 		if (motorPulse[0][i] != motorPulse[1][i])
 		{
+			//运动未完成
+			motorEnd[i] = 0;
 			speed = motorPulse[2][i];
 			if (count[i] < speed)
 			{
@@ -279,10 +305,15 @@ static void setMotorPulse(void)
 			}
 			count[i]++;
 		}
+		else
+		{
+			//运动完成
+			motorEnd[i] = 1;		
+		}
 	}
 }
 
-
+//电机Task
 void motorTaskGo()
 {
 	unsigned char i = 0;

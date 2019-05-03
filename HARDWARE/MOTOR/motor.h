@@ -35,6 +35,8 @@ void setMotorSpeed(unsigned char id, u16 speed);
 void setPositiveLimit(unsigned char id, u32 limit);
 void setNegativeLimit(unsigned char id, u32 limit);
 void emergencyStop();													//½ô¼±Í£Ö¹
+u8 getMotorsIsEnd();
+u8 getMotorIsEnd(u8 id);
 static void checkLImit(void);
 static void setMotorPulse(void);
 void motorTaskGo(void);

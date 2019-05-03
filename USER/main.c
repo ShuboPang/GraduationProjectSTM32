@@ -4,6 +4,7 @@
 #include "led.h"
 #include "motor.h"
 #include "timer.h"
+#include "communication.h"
 
 void sys_init()
 {
@@ -20,10 +21,10 @@ void sys_init()
 
 int main(void)
 {
-	u32 t=0;
 	sys_init();
 	while(1)
 	{
-		delay_ms(500);
+		delay_ms(1);
+		sendTo();
 	}
 }
