@@ -1,6 +1,7 @@
 #include "timer.h"
 #include "led.h"
 #include "motor.h"
+#include "error.h"
 //////////////////////////////////////////////////////////////////////////////////	 
  
 //定时器 驱动代码	   
@@ -52,6 +53,7 @@ void TIM3_IRQHandler(void)
 //	1ms定时中断进入函数
 void Tim3_taskGo()
 {
+	setErrorState(NONE);	//清除报警
 	LED_RunFlash();
 	motorTaskGo();
 	sendTo();

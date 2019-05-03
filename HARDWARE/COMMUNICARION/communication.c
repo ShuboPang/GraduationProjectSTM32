@@ -1,6 +1,7 @@
 #include "communication.h"
 #include "usart.h"
 #include "motor.h"
+#include "error.h"
 
 u32 checkSum(char *src)
 {
@@ -57,7 +58,7 @@ void getError()
 	//Ω· ¯Œª£∫1
 	s_buff[ERROR_MODE][1] = ERROR_MODE + 1;
 
-	s_buff[ERROR_MODE][2] = 1;
+	s_buff[ERROR_MODE][2] = getErrorState();
 	s_buff[ERROR_MODE][3] = 0;
 	s_buff[ERROR_MODE][4] = 0;
 	s_buff[ERROR_MODE][5] = 0;
@@ -115,35 +116,38 @@ void recv()
 	i = USART_RX_BUF[1];
 	switch (i)
 	{
+	case STOP:
+		emergencyStop();
+		break;
 
 	case MOTOR1_TURN_RIGHT:
 	case MOTOR2_TURN_RIGHT:
 	case MOTOR3_TURN_RIGHT:
-		setMotorPos_rela(i / 10+1, data);
+		setMotorPos_rela(i / 10 + MOTOR_START_NUM, data);
 		break;
 
 	case MOTOR1_TURN_LEFT:
 	case MOTOR2_TURN_LEFT:
 	case MOTOR3_TURN_LEFT:
-		setMotorPos_rela(i / 10+1, data*-1);
+		setMotorPos_rela(i / 10 + MOTOR_START_NUM, data*-1);
 		break;
 		
 	case MOTOR1_SPEED:
 	case MOTOR2_SPEED:
 	case MOTOR3_SPEED:
-		setMotorSpeed(i / 10+1, data);
+		setMotorSpeed(i / 10 + MOTOR_START_NUM, data);
 		break;
 
 	case MOTOR1_POS:
 	case MOTOR2_POS:
 	case MOTOR3_POS:
-		setMotorPos_abs(i / 10+1, data);
+		setMotorPos_abs(i / 10 + MOTOR_START_NUM, data);
 		break;
 
 	case MOTOR1_ORIGIN:
 	case MOTOR2_ORIGIN:
 	case MOTOR3_ORIGIN:
-		setOrigin(i / 10 + 1);
+		setOrigin(i / 10 + MOTOR_START_NUM);
 		break;
 
 	default:

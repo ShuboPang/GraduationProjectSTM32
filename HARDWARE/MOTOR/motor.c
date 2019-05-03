@@ -1,4 +1,5 @@
 #include "motor.h"
+#include "error.h"
 
 /*
 motorPulse[0] : 实时脉冲数 ；
@@ -84,7 +85,7 @@ void motorSetDir(unsigned char id,unsigned char flag)
 	}
 	if (id >= MOTOR_START_NUM && id <= MOTOR_NUM)
 	{
-		motorPulse[3][id - MOTOR_START_NUM] = flag;
+		motorPulse[3][id - MOTOR_START_NUM] = !flag;
 	}
 }
 
@@ -179,25 +180,42 @@ void setNegativeLimit(unsigned char id, u32 limit)
 	}
 }
 
+//紧急停止
+void emergencyStop()
+{
+	for (u8 i = 0; i < MOTOR_NUM; i++)
+	{
+		setMotorSpeed(i + MOTOR_START_NUM, 0);
+		setMotorPos_abs(i + MOTOR_START_NUM,getMotorPulse(i + MOTOR_START_NUM));
+	}
+}
+
+
 //检查是否超出极限
 static void checkLImit(void)
 {
 	unsigned char i = 0;
 	for (i = 0; i < MOTOR_NUM; i++)
 	{
-		//检查实时值是否超出脉冲
-		if (motorPulse[0][i] < motorPulse[5][i] || motorPulse[0][i] > motorPulse[4][i])
+		//检查实时值是否超出极限
+		if (motorPulse[0][i] < motorPulse[5][i])
 		{
-			//报警
+			setErrorState(MOVE_1_NegativeLimit * (i+ MOTOR_START_NUM));
 		}
-		//检查目标值是否超出脉冲
+		else if (motorPulse[0][i] > motorPulse[4][i])
+		{
+			setErrorState(MOVE_1_PositiveLimit* (i + MOTOR_START_NUM));
+		}
+		//检查目标值是否超出极限
 		if (motorPulse[1][i] < motorPulse[5][i])
 		{
 			motorPulse[1][i] = motorPulse[5][i];
+			setErrorState(MOTOR_1_POS_NegativeLimit* (i + MOTOR_START_NUM));
 		}
 		else if (motorPulse[1][i] > motorPulse[4][i])
 		{
 			motorPulse[1][i] = motorPulse[4][i];
+			setErrorState(MOTOR_1_POS_PositiveLimit* (i + MOTOR_START_NUM));
 		}
 	}
 }

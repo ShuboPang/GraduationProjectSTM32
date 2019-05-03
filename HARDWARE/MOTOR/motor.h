@@ -34,6 +34,7 @@ void setMotorPos_rela(unsigned char id,int pulse);					//设置电机相对脉冲数
 void setMotorSpeed(unsigned char id, u16 speed);
 void setPositiveLimit(unsigned char id, u32 limit);
 void setNegativeLimit(unsigned char id, u32 limit);
+void emergencyStop();													//紧急停止
 static void checkLImit(void);
 static void setMotorPulse(void);
 void motorTaskGo(void);
