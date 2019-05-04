@@ -2,6 +2,7 @@
 #include "led.h"
 #include "motor.h"
 #include "error.h"
+#include "route.h"
 //////////////////////////////////////////////////////////////////////////////////	 
  
 //定时器 驱动代码	   
@@ -55,5 +56,6 @@ void Tim3_taskGo()
 {
 	setErrorState(NONE);	//清除报警
 	LED_RunFlash();
+	checkIsCalib();
 	motorTaskGo();
 }

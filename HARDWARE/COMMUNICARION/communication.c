@@ -2,6 +2,7 @@
 #include "usart.h"
 #include "motor.h"
 #include "error.h"
+#include "route.h"
 
 u32 checkSum(char *src)
 {
@@ -149,6 +150,19 @@ void recv()
 	case MOTOR3_ORIGIN:
 		setOrigin(i / 10 + MOTOR_START_NUM);
 		break;
+
+	case MOTOR1_P_LIMIT:
+	case MOTOR2_P_LIMIT:
+	case MOTOR3_P_LIMIT:
+		setPositiveLimit(i / 10 + MOTOR_START_NUM, data);
+
+	case MOTOR1_N_LIMIT:
+	case MOTOR2_N_LIMIT:
+	case MOTOR3_N_LIMIT:
+		setNegativeLimit(i / 10 + MOTOR_START_NUM, data);
+			
+	case AUTO_1:	//¹Ì¶¨¸ß¶È
+		fixedHeight(data);
 
 	default:
 		break;

@@ -252,6 +252,10 @@ static void setMotorPulse(void)
 	u32 speed = 0;
 	for (u32 i = 0; i < MOTOR_NUM; i++)
 	{
+		if (getMotorSpeed(i + MOTOR_START_NUM))
+		{
+			return;
+		}
 		if (motorPulse[0][i] != motorPulse[1][i])
 		{
 			//运动未完成

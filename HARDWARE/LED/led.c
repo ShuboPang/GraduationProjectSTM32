@@ -39,9 +39,3 @@ void LED_RunFlash(void)
 	}
 	i++;
 }
-
-
-
-
-
-
