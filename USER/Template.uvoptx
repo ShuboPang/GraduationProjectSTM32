@@ -173,7 +173,12 @@
         <Ww>
           <count>4</count>
           <WinNumber>1</WinNumber>
-          <ItemText>motorPulse</ItemText>
+          <ItemText>motorPulse,0x0A</ItemText>
+        </Ww>
+        <Ww>
+          <count>5</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>count</ItemText>
         </Ww>
       </WatchWindow1>
       <Tracepoint>
@@ -182,7 +187,7 @@
       <DebugFlag>
         <trace>0</trace>
         <periodic>1</periodic>
-        <aLwin>1</aLwin>
+        <aLwin>0</aLwin>
         <aCover>0</aCover>
         <aSer1>1</aSer1>
         <aSer2>0</aSer2>
@@ -876,6 +881,18 @@
       <bDave2>0</bDave2>
       <PathWithFileName>..\HARDWARE\ROUTE\route.c</PathWithFileName>
       <FilenameWithoutPath>route.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+    <File>
+      <GroupNumber>6</GroupNumber>
+      <FileNumber>51</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>1</tvExp>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>..\HARDWARE\MPU6050\UART2.c</PathWithFileName>
+      <FilenameWithoutPath>UART2.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>

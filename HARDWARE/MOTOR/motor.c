@@ -19,18 +19,18 @@ static u8 motorEnd[MOTOR_NUM] = { 0 };
 void motors_init(void)
 {
 
-	GPIO_InitTypeDef  GPIO_InitStructure;
+	  GPIO_InitTypeDef  GPIO_InitStructure;
 
   	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);
 
- 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7 | GPIO_Pin_8 | GPIO_Pin_9 | GPIO_Pin_10 | GPIO_Pin_11 | GPIO_Pin_12 | GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15;
+ 	  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7 | GPIO_Pin_8 | GPIO_Pin_9 | GPIO_Pin_10 | GPIO_Pin_11 | GPIO_Pin_12 | GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15;
   	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
   	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
   	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
- 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
+ 	  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
   	GPIO_Init(GPIOE, &GPIO_InitStructure);
 	
-	GPIO_SetBits(GPIOE,GPIO_Pin_7 | GPIO_Pin_8 | GPIO_Pin_9 | GPIO_Pin_10 | GPIO_Pin_11 | GPIO_Pin_12 | GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15);
+	  GPIO_SetBits(GPIOE,GPIO_Pin_7 | GPIO_Pin_8 | GPIO_Pin_9 | GPIO_Pin_10 | GPIO_Pin_11 | GPIO_Pin_12 | GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15);
 	
 }
 
@@ -40,13 +40,34 @@ void motorSetEn(unsigned char id, unsigned char flag)
 	switch (id)
 	{
 	case 1:
-		MOTOR1EN = flag;
+		if(flag)
+		{
+			GPIO_SetBits(GPIOE,GPIO_Pin_7);
+		}
+		else
+		{
+			GPIO_ResetBits(GPIOE,GPIO_Pin_7);
+		}
 		break;
 	case 2:
-		MOTOR2EN = flag;
+		if(flag)
+		{
+			GPIO_SetBits(GPIOE,GPIO_Pin_10);
+		}
+		else
+		{
+			GPIO_ResetBits(GPIOE,GPIO_Pin_10);
+		}
 		break;
 	case 3:
-		MOTOR3EN = flag;
+		if(flag)
+		{
+			GPIO_SetBits(GPIOE,GPIO_Pin_13);
+		}
+		else
+		{
+			GPIO_ResetBits(GPIOE,GPIO_Pin_13);
+		}
 		break;
 	default:
 		break;
@@ -79,13 +100,34 @@ void motorSetDir(unsigned char id,unsigned char flag)
 	switch(id)
 	{
 	case 1:
-		MOTOR1DIR = flag;
+		if(flag)
+		{
+			GPIO_SetBits(GPIOE,GPIO_Pin_8);
+		}
+		else
+		{
+			GPIO_ResetBits(GPIOE,GPIO_Pin_8);
+		}
 		break;
 	case 2:
-		MOTOR2DIR = flag;
+		if(flag)
+		{
+			GPIO_SetBits(GPIOE,GPIO_Pin_11);
+		}
+		else
+		{
+			GPIO_ResetBits(GPIOE,GPIO_Pin_11);
+		}
 		break;
 	case 3:
-		MOTOR3DIR = flag;
+		if(flag)
+		{
+			GPIO_SetBits(GPIOE,GPIO_Pin_14);
+		}
+		else
+		{
+			GPIO_ResetBits(GPIOE,GPIO_Pin_14);
+		}
 		break;
 	default:
 		break;
@@ -252,7 +294,7 @@ static void setMotorPulse(void)
 	u32 speed = 0;
 	for (u32 i = 0; i < MOTOR_NUM; i++)
 	{
-		if (getMotorSpeed(i + MOTOR_START_NUM))
+		if (!getMotorSpeed(i + MOTOR_START_NUM))
 		{
 			return;
 		}
@@ -266,13 +308,13 @@ static void setMotorPulse(void)
 				switch (i + MOTOR_START_NUM)
 				{
 				case 1:
-					MOTOR1 = 1;
+					GPIO_SetBits(GPIOE,GPIO_Pin_9);
 					break;
 				case 2:
-					MOTOR2 = 1;
+					GPIO_SetBits(GPIOE,GPIO_Pin_12);
 					break;
 				case 3:
-					MOTOR3 = 1;
+					GPIO_SetBits(GPIOE,GPIO_Pin_15);
 					break;
 				default:
 					break;
@@ -283,13 +325,13 @@ static void setMotorPulse(void)
 				switch (i + MOTOR_START_NUM)
 				{
 				case 1:
-					MOTOR1 = 0;
+					GPIO_ResetBits(GPIOE,GPIO_Pin_9);
 					break;
 				case 2:
-					MOTOR2 = 0;
+					GPIO_ResetBits(GPIOE,GPIO_Pin_12);
 					break;
 				case 3:
-					MOTOR3 = 0;
+					GPIO_ResetBits(GPIOE,GPIO_Pin_15);
 					break;
 				default:
 					break;

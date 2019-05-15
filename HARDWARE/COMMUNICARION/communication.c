@@ -3,6 +3,7 @@
 #include "motor.h"
 #include "error.h"
 #include "route.h"
+#include "JY901.h"
 
 u32 checkSum(char *src)
 {
@@ -40,8 +41,8 @@ void getMpu6050()
 
 	s_buff[MPU6050_MODE][1] = MPU6050_MODE + 1;			
 
-	s_buff[MPU6050_MODE][2] = 0;
-	s_buff[MPU6050_MODE][3] = 0;
+	s_buff[MPU6050_MODE][2] = stcAngle.Angle[0];
+	s_buff[MPU6050_MODE][3] = stcAngle.Angle[1];
 	s_buff[MPU6050_MODE][4] = 0;
 	s_buff[MPU6050_MODE][5] = 0;
 	

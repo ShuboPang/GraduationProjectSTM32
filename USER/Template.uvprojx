@@ -337,7 +337,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F40_41xxx,USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>..\CORE;..\SYSTEM\delay;..\SYSTEM\sys;..\SYSTEM\usart;..\USER;..\FWLIB\inc;..\HARDWARE\KEY;..\HARDWARE\LED;..\HARDWARE\MOTOR;..\HARDWARE\TIMER;..\HARDWARE\COMMUNICARION;..\HARDWARE\ERROR;..\HARDWARE\ROUTE</IncludePath>
+              <IncludePath>..\CORE;..\SYSTEM\delay;..\SYSTEM\sys;..\SYSTEM\usart;..\USER;..\FWLIB\inc;..\HARDWARE\KEY;..\HARDWARE\LED;..\HARDWARE\MOTOR;..\HARDWARE\TIMER;..\HARDWARE\COMMUNICARION;..\HARDWARE\ERROR;..\HARDWARE\ROUTE;..\HARDWARE\MPU6050</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -655,6 +655,11 @@
               <FileName>route.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\ROUTE\route.c</FilePath>
+            </File>
+            <File>
+              <FileName>UART2.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\MPU6050\UART2.c</FilePath>
             </File>
           </Files>
         </Group>
