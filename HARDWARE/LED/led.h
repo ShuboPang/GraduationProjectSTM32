@@ -15,5 +15,6 @@
 #define LED1 PAout(7)	// DS1	 
 
 void LED_Init(void);//≥ı ºªØ
-void LED_RunFlash(void); //run led flash
+void LED_RunFlash(u32 time);
+void LED_Pulse(u32 time);
 #endif

@@ -55,7 +55,7 @@ void TIM3_IRQHandler(void)
 void Tim3_taskGo()
 {
 	setErrorState(NONE);	//Çå³ý±¨¾¯
-	LED_RunFlash();
+	LED_RunFlash(500);
 	checkIsCalib();
 	motorTaskGo();
 }

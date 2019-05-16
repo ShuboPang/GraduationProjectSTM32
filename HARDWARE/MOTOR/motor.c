@@ -1,5 +1,6 @@
 #include "motor.h"
 #include "error.h"
+#include "led.h"
 
 /*
 motorPulse[0] : 实时脉冲数 ；
@@ -298,9 +299,11 @@ static void setMotorPulse(void)
 		{
 			return;
 		}
+		
 		if (motorPulse[0][i] != motorPulse[1][i])
 		{
 			//运动未完成
+			LED_Pulse(200);
 			motorEnd[i] = 0;
 			speed = motorPulse[2][i];
 			if (count[i] < speed)

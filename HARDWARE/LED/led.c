@@ -25,16 +25,32 @@ void LED_Init(void)
 
 }
 
-void LED_RunFlash(void)
+void LED_RunFlash(u32 time)
 {
 	static u32 i = 0;
-	if( i  >= 500 && i < 1000)
+	if( i  >= time && i < time*2)
 	{
 		GPIO_SetBits(GPIOA,GPIO_Pin_6);
 	}
-	else if(i >= 1000 )
+	else if(i >= time*2)
 	{
 		GPIO_ResetBits(GPIOA,GPIO_Pin_6);
+		i = 0;
+	}
+	i++;
+}
+
+
+void LED_Pulse(u32 time)
+{
+	static u32 i = 0;
+	if (i >= time && i < time * 2)
+	{
+		GPIO_SetBits(GPIOA, GPIO_Pin_7);
+	}
+	else if (i >= time * 2)
+	{
+		GPIO_ResetBits(GPIOA, GPIO_Pin_7);
 		i = 0;
 	}
 	i++;
