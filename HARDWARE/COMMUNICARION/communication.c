@@ -5,6 +5,21 @@
 #include "route.h"
 #include "JY901.h"
 
+static u32 angleInfo[] = { 0,0,0 };   // 角度稳态偏差  距离值
+
+
+//设置角度原点
+void setAngleOrgin()
+{
+	angleInfo[0] = stcAngle.Angle[0];
+	angleInfo[1] = stcAngle.Angle[1];
+}
+
+void setDistance(u32 dis)
+{
+	angleInfo[2] = dis;
+}
+
 u32 checkSum(char *src)
 {
 	u32 sum = 0;
@@ -41,9 +56,9 @@ void getMpu6050()
 
 	s_buff[MPU6050_MODE][1] = MPU6050_MODE + 1;			
 
-	s_buff[MPU6050_MODE][2] = stcAngle.Angle[0];
-	s_buff[MPU6050_MODE][3] = stcAngle.Angle[1];
-	s_buff[MPU6050_MODE][4] = 0;
+	s_buff[MPU6050_MODE][2] = stcAngle.Angle[0]- angleInfo[0];
+	s_buff[MPU6050_MODE][3] = stcAngle.Angle[1]- angleInfo[1];
+	s_buff[MPU6050_MODE][4] = angleInfo[2];
 	s_buff[MPU6050_MODE][5] = 0;
 	
 }
@@ -150,6 +165,9 @@ void recv()
 	case MOTOR2_ORIGIN:
 	case MOTOR3_ORIGIN:
 		setOrigin(i / 10 + MOTOR_START_NUM);
+		break;
+	case MPU6050_ORIGIN:
+		setAngleOrgin();
 		break;
 
 	case MOTOR1_P_LIMIT:

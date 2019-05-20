@@ -70,6 +70,8 @@ typedef enum {
 
 
 u32 checkSum(char *src);
+void setDistance(u32 dis);
+void setAngleOrgin();
 void getMotorInfo();
 void getMpu6050();
 void getError();

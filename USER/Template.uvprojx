@@ -337,7 +337,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F40_41xxx,USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>..\CORE;..\SYSTEM\delay;..\SYSTEM\sys;..\SYSTEM\usart;..\USER;..\FWLIB\inc;..\HARDWARE\KEY;..\HARDWARE\LED;..\HARDWARE\MOTOR;..\HARDWARE\TIMER;..\HARDWARE\COMMUNICARION;..\HARDWARE\ERROR;..\HARDWARE\ROUTE;..\HARDWARE\MPU6050</IncludePath>
+              <IncludePath>..\CORE;..\SYSTEM\delay;..\SYSTEM\sys;..\SYSTEM\usart;..\USER;..\FWLIB\inc;..\HARDWARE\KEY;..\HARDWARE\LED;..\HARDWARE\MOTOR;..\HARDWARE\TIMER;..\HARDWARE\COMMUNICARION;..\HARDWARE\ERROR;..\HARDWARE\ROUTE;..\HARDWARE\MPU6050;..\HARDWARE\uart3;..\HARDWARE\EXTI</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -660,6 +660,16 @@
               <FileName>UART2.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\MPU6050\UART2.c</FilePath>
+            </File>
+            <File>
+              <FileName>UART3.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\uart3\UART3.c</FilePath>
+            </File>
+            <File>
+              <FileName>exti.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\EXTI\exti.c</FilePath>
             </File>
           </Files>
         </Group>

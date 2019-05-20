@@ -32,8 +32,32 @@ void motors_init(void)
   	GPIO_Init(GPIOE, &GPIO_InitStructure);
 	
 	  GPIO_SetBits(GPIOE,GPIO_Pin_7 | GPIO_Pin_8 | GPIO_Pin_9 | GPIO_Pin_10 | GPIO_Pin_11 | GPIO_Pin_12 | GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15);
+	  for (int i = 1; i <= 3; i++)
+	  {
+		  motorSetEn(i, 1);
+	  }
+}
+
+
+//初始化电机速度和位置参数
+void motor_pos_init()
+{
+	u8 i = 0;
+	for (i = 0; i < MOTOR_NUM; i++)
+	{
+		motorPulse[0][i] = 5000;
+	}
+	for (i = 0; i < MOTOR_NUM; i++)
+	{
+		motorPulse[1][i] = 5000;
+	}
+	for (i = 0; i < MOTOR_NUM; i++)
+	{
+		motorPulse[2][i] = 10;
+	}
 	
 }
+
 
 //电机使能
 void motorSetEn(unsigned char id, unsigned char flag)
@@ -41,7 +65,7 @@ void motorSetEn(unsigned char id, unsigned char flag)
 	switch (id)
 	{
 	case 1:
-		if(flag)
+		if(!flag)
 		{
 			GPIO_SetBits(GPIOE,GPIO_Pin_7);
 		}
@@ -51,7 +75,7 @@ void motorSetEn(unsigned char id, unsigned char flag)
 		}
 		break;
 	case 2:
-		if(flag)
+		if(!flag)
 		{
 			GPIO_SetBits(GPIOE,GPIO_Pin_10);
 		}
@@ -61,7 +85,7 @@ void motorSetEn(unsigned char id, unsigned char flag)
 		}
 		break;
 	case 3:
-		if(flag)
+		if(!flag)
 		{
 			GPIO_SetBits(GPIOE,GPIO_Pin_13);
 		}

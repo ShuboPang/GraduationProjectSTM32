@@ -23,6 +23,7 @@
 #define MOTOR3 PEout(15)	 
 
 void motors_init(void);												//所有电机端口初始化
+void motor_pos_init();
 void setOrigin(unsigned char id);									//设置电机原点
 void motorSetEn(unsigned char id, unsigned char flag);				//设置电机使能
 void motorSetDir(unsigned char id,unsigned char flag);				//设置电机转动方向

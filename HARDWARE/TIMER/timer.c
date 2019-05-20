@@ -3,11 +3,29 @@
 #include "motor.h"
 #include "error.h"
 #include "route.h"
+#include "exti.h"
 //////////////////////////////////////////////////////////////////////////////////	 
  
 //定时器 驱动代码	   
 //STM32F4工程-库函数版本							  
 ////////////////////////////////////////////////////////////////////////////////// 	 
+
+static u32 counter = 0;
+
+
+//读取计数器时间 返回值单位是1us
+u32 getCounterTime(void)
+{
+	return (counter * 200);
+}
+
+
+//计数器清零
+void resetCounter()
+{
+	counter = 0;
+}
+
 
 
 //通用定时器3中断初始化
@@ -54,8 +72,13 @@ void TIM3_IRQHandler(void)
 //	1ms定时中断进入函数
 void Tim3_taskGo()
 {
+	counter++;
+	if (counter >= 1000)
+	{
+		stopDisRun();
+	}
 	setErrorState(NONE);	//清除报警
-	LED_RunFlash(500);
+	LED_RunFlash(2500);
 	checkIsCalib();
 	motorTaskGo();
 }
