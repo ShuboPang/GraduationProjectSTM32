@@ -16,6 +16,7 @@ void sys_init()
 	Initial_UART2(9600);
 	Initial_UART3(9600);
 	//motor_pos_init();
+	Timer_Config();
 	Dis_Init();
 	EXTIX_Init();
 	LED_Init();
@@ -32,7 +33,8 @@ int main(void)
 	sys_init();
 	while(1)
 	{
-		distanceStart();
+		//distanceStart();
+		GetDistanceDelay();
 		delay_ms(1);
 		sendTo();
 		delay_ms(1);

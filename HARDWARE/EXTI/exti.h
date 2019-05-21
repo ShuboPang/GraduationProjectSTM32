@@ -13,7 +13,9 @@ void Dis_Init(void);
 void EXTIX_Init(void);	//外部中断初始化	
 void distanceStart();
 void stopDisRun();
+void Timer_Config();
 u8 IsDisRunning();
+void GetDistanceDelay(void);
 #endif
 
 
