@@ -193,7 +193,7 @@ void setSendBuff()
 	}
 }
 
-void sendTo()
+void sendTo(u32 times)
 {
 	static u8 count = 0;
 	static u8 i = 0;
@@ -202,7 +202,7 @@ void sendTo()
 	{
 		setSendBuff();
 	}
-	if (i >= 10)
+	if (i >= times)
 	{
 		printf("#%d,%d,%d,%d,%d,%d,%d,%d", s_buff[count][0],s_buff[count][1], s_buff[count][2],
 										 s_buff[count][3], s_buff[count][4], s_buff[count][5],
@@ -224,43 +224,52 @@ void recv()
 	i = USART_RX_BUF[1];
 	switch (i)
 	{
+		//紧急停止
 	case STOP:
 		emergencyStop();
 		break;
 
+		//电机正转
 	case MOTOR1_TURN_RIGHT:
 	case MOTOR2_TURN_RIGHT:
 	case MOTOR3_TURN_RIGHT:
 		setMotorPos_rela(i / 10 + MOTOR_START_NUM, data);
 		break;
 
+		//电机反转
 	case MOTOR1_TURN_LEFT:
 	case MOTOR2_TURN_LEFT:
 	case MOTOR3_TURN_LEFT:
 		setMotorPos_rela(i / 10 + MOTOR_START_NUM, data*-1);
 		break;
 		
+		//设置电机速度
 	case MOTOR1_SPEED:
 	case MOTOR2_SPEED:
 	case MOTOR3_SPEED:
 		setMotorSpeed(i / 10 + MOTOR_START_NUM, data);
 		break;
 
+		//设置电机位置
 	case MOTOR1_POS:
 	case MOTOR2_POS:
 	case MOTOR3_POS:
 		setMotorPos_abs(i / 10 + MOTOR_START_NUM, data);
 		break;
 
+		//设置电机原点
 	case MOTOR1_ORIGIN:
 	case MOTOR2_ORIGIN:
 	case MOTOR3_ORIGIN:
 		setOrigin(i / 10 + MOTOR_START_NUM);
 		break;
+
+		//设置陀螺仪原点
 	case MPU6050_ORIGIN:
 		setAngleOrgin();
 		break;
 
+		//设置极限
 	case MOTOR1_P_LIMIT:
 	case MOTOR2_P_LIMIT:
 	case MOTOR3_P_LIMIT:
@@ -271,6 +280,7 @@ void recv()
 	case MOTOR3_N_LIMIT:
 		setNegativeLimit(i / 10 + MOTOR_START_NUM, data);
 	
+		//标定点
 	case CALIBRATION_1:
 	case CALIBRATION_2:
 	case CALIBRATION_3:
@@ -280,8 +290,25 @@ void recv()
 		break;
 
 
-	case AUTO_1:	//固定高度
+	case AUTO_G_SPEED:		//设置全局速度 
+		setG_speed(data);
+		break;
+	case AUTO_BACK:
+		setComeBack(data);
+		break;
+	case AUTO_CYCLE:
+		setCycle(data);
+		break;
+	case AUTO_CYCLE_TIMES:
+		setCycleTimes(data);
+		break;
+	case AUTO_SYMMETRY:
+		setSymmetrye(data);
+		break;
+
+	case AUTO_1:	//固定高度运行
 		fixedHeight(data);
+		break;
 
 	default:
 		break;

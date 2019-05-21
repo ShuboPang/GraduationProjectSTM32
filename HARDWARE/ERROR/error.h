@@ -23,10 +23,8 @@ typedef enum
 
 }ERRORType;
 
-static ERRORType errState = 0;
-
 void setErrorState(ERRORType i);
-ERRORType getErrorState();
+ERRORType getErrorState(void);
 
 
 #endif // !_ERROR_H_

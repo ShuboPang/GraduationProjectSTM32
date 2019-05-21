@@ -74,14 +74,18 @@ typedef enum {
 	AUTO_4,
 	AUTO_5,
 	AUTO_6,
-	AUTO_7,
+	AUTO_G_SPEED,//设置全局速度
+	AUTO_BACK,	//是否返回
+	AUTO_CYCLE,	//是否循环
+	AUTO_CYCLE_TIMES,//循环次数
+	AUTO_SYMMETRY,	//是否对称
 }controlMode;
 
 
-void averageFiltering();		//平均值滤波
-u32 getMpu6050_x();
-u32 getMpu6050_y();
-u32 getHeight();
+void averageFiltering(void);		//平均值滤波
+u32 getMpu6050_x(void);
+u32 getMpu6050_y(void);
+u32 getHeight(void);
 
 u32 checkSum(char *src);
 void setDistance(u32 dis);
@@ -90,7 +94,7 @@ void getMotorInfo(void);
 void getMpu6050(void);
 void getError(void);
 void setSendBuff(void);
-void sendTo(void);
+void sendTo(u32 times);
 void recv(void);
 
 

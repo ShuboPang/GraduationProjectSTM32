@@ -69,7 +69,7 @@ void TIM3_IRQHandler(void)
 	TIM_ClearITPendingBit(TIM3,TIM_IT_Update);  //清除中断标志位
 }
 
-//	1ms定时中断进入函数
+//	0.2ms定时中断进入函数
 void Tim3_taskGo()
 {
 	counter++;
@@ -81,4 +81,5 @@ void Tim3_taskGo()
 	LED_RunFlash(2500);
 	checkIsCalib();
 	motorTaskGo();
+	sendTo(50);
 }

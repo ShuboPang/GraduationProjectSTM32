@@ -15,7 +15,7 @@ void sys_init()
 	uart_init(115200);
 	Initial_UART2(9600);
 	Initial_UART3(9600);
-	//motor_pos_init();
+	motor_pos_init();
 	Timer_Config();
 	Dis_Init();
 	EXTIX_Init();
@@ -26,6 +26,7 @@ void sys_init()
 	setPositiveLimit(1, 10000);
 	setPositiveLimit(2, 10000);
 	setPositiveLimit(3, 10000);
+	emergencyStop();		//防止上电就开始运动
 }
 
 int main(void)
@@ -33,10 +34,6 @@ int main(void)
 	sys_init();
 	while(1)
 	{
-		//distanceStart();
 		GetDistanceDelay();
-		delay_ms(1);
-		sendTo();
-		delay_ms(1);
 	}
 }

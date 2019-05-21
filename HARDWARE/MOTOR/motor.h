@@ -22,13 +22,19 @@
 #define MOTOR3DIR PEout(14)	
 #define MOTOR3 PEout(15)	 
 
+//电机ID
+#define X_MOTOR (1)
+#define Y_MOTOR (2)	
+#define Z_MOTOR (3)	
+
+
 void motors_init(void);												//所有电机端口初始化
 void motor_pos_init(void);
 void setOrigin(unsigned char id);									//设置电机原点
 void motorSetEn(unsigned char id, unsigned char flag);				//设置电机使能
 void motorSetDir(unsigned char id,unsigned char flag);				//设置电机转动方向
 u32 getMotorPulse(unsigned char id);								//获取电机当前脉冲数
-u32 getMotorEndPulse(unsigned char id);
+u32 getMotorEndPulse(unsigned char id);								//获取电机目标脉冲数
 u32 getMotorSpeed(unsigned char id);
 void setMotorPos_abs(unsigned char id, u32 pulse);				//设置电机绝对脉冲数
 void setMotorPos_rela(unsigned char id,int pulse);					//设置电机相对脉冲数
