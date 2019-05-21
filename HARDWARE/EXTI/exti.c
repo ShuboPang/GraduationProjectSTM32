@@ -118,97 +118,42 @@ void stopDisRun()
 	disState = 0;
 }
 
-void distanceStart()
-{
-	static u32 i = 0;
-	if (!IsDisRunning())
-	{
-		if (i < 50)
-		{
-			i++;
-		}
-		else
-		{
-			setTrig(0);
-			delay_us(15);
-			setTrig(1);
-			delay_us(20);
-			setTrig(0);
-			delay_us(20);
-			resetCounter();//清空计数器
-			disState = 1;
-			i = 0;			
-		}
-	}
-	else
-	{
-		echoState[1] = getEcho();
-		if ((echoState[0] == 1) && (echoState[1] == 0))
-		{
-			u32 times = getCounterTime();
-			u32 distance = times * 0.17;       //us  *  speed(mm/us)
-			stopDisRun();
-			TIM_Cmd(TIM2, DISABLE);//关闭定时器
-			distance = TIM_GetCounter(TIM2) / 58;
-			TIM_SetCounter(TIM2, 0);
-			setDistance(distance);
-		}
-		else if ((echoState[0] == 0) && (echoState[1] == 1))
-		{
-			TIM_Cmd(TIM2, ENABLE);//使能TIM2定时器
-		}
-		echoState[0] = echoState[1];
-	}
-}
-
 void GetDistanceDelay(void)
 {
-
-	  disState = 1;
-	  u32 distance_cm=0;
-	  setTrig(1);
-	  TIM_SetCounter(TIM2, 0);
-	  TIM_Cmd(TIM2, ENABLE);//使能TIM2定时器
-		while(TIM_GetCounter(TIM2) < 11);//ÑÓÊ±³¬¹ý10us
-		setTrig(0);
-		TIM_SetCounter(TIM2, 0);
+	disState = 1;
+	u32 distance_cm=0;
+	setTrig(1);
+	TIM_SetCounter(TIM2, 0);
+	TIM_Cmd(TIM2, ENABLE);//使能TIM2定时器
+	while(TIM_GetCounter(TIM2) < 11);
+	setTrig(0);
+	TIM_SetCounter(TIM2, 0);
 	
-		while(getEcho() == 0)//µÈ´ý»ØÏòÐÅºÅÆðÊ¼Î»ÖÃ
+	while(getEcho() == 0)
+	{
+		if(TIM_GetCounter(TIM2) > 60000)
 		{
-			if(TIM_GetCounter(TIM2) > 60000)//»ØÓ¦Ê±¼ä³¬³öÕý³£·¶Î§ 
-			{
-				disState = 0;
-				distance_cm = 0;//Ê§°Üºó¾ÍºóÍË
-				TIM_Cmd(TIM2, DISABLE);//¹Ø±Õ¶¨Ê±Æ÷
-				return;//±¾´ÎÊ§°Ü
-			}
+			disState = 0;
+			distance_cm = 0;
+			TIM_Cmd(TIM2, DISABLE);
+			return;
 		}
-		TIM_SetCounter(TIM2, 0);
-		while(getEcho() == 1)//¿ªÊ¼¼ÆËã³¤¶È
+	}
+	TIM_SetCounter(TIM2, 0);
+	while(getEcho() == 1)
+	{
+		int count = TIM_GetCounter(TIM2);
+		if(count > 60000)
 		{
-			int count = TIM_GetCounter(TIM2);
-			if(count > 60000)//»ØÓ¦Ê±¼ä³¬³öÕý³£·¶Î§ 
-			{
-				disState = 0;
-				distance_cm = 0;//Ê§°Üºó¾ÍºóÍË
-				TIM_Cmd(TIM2, DISABLE);//¹Ø±Õ¶¨Ê±Æ÷
-				return;//±¾´ÎÊ§°Ü
-			}
+			disState = 0;
+			distance_cm = 0;
+			TIM_Cmd(TIM2, DISABLE);
+			return;
 		}
-		u32 dis_count = TIM_GetCounter(TIM2);
-		TIM_Cmd(TIM2, DISABLE);//¹Ø±Õ¶¨Ê±Æ÷
-		distance_cm = (unsigned int)(((long)(dis_count) * 1.7));//ÉùËÙ340m/s
-		setDistance(distance_cm);
-		disState = 0;
+	}
+	u32 dis_count = TIM_GetCounter(TIM2);
+	TIM_Cmd(TIM2, DISABLE);
+	distance_cm = (unsigned int)(((long)(dis_count) * 1.7));
+	setDistance(distance_cm);
+	disState = 0;
 }
-
-
-
-
-
-
-
-
-
-
-

@@ -55,11 +55,20 @@ typedef enum {
 	STOP = 41,
 
 	//标定模式
-	CALIBRATION = 51,
-
+	CALIBRATION_1 = 51,
+	CALIBRATION_2,
+	CALIBRATION_3,
+	CALIBRATION_4,
+	CALIBRATION_5,
+	CALIBRATION_6,
+	CALIBRATION_7,
+	CALIBRATION_8,
+	CALIBRATION_9,
+	CALIBRATION_10,
+	CALIBRATION_11,
 
 	//自动模式
-	AUTO_1 = 61,
+	AUTO_1 = 71,
 	AUTO_2,
 	AUTO_3,
 	AUTO_4,
@@ -69,15 +78,20 @@ typedef enum {
 }controlMode;
 
 
+void averageFiltering();		//平均值滤波
+u32 getMpu6050_x();
+u32 getMpu6050_y();
+u32 getHeight();
+
 u32 checkSum(char *src);
 void setDistance(u32 dis);
-void setAngleOrgin();
-void getMotorInfo();
-void getMpu6050();
-void getError();
-void setSendBuff();
-void sendTo();
-void recv();
+void setAngleOrgin(void);
+void getMotorInfo(void);
+void getMpu6050(void);
+void getError(void);
+void setSendBuff(void);
+void sendTo(void);
+void recv(void);
 
 
 

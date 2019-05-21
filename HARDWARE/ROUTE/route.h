@@ -13,6 +13,8 @@ static u32 calibration_heigh[CALIB_HEIGH_POINT][MOTOR_NUM] = { 0 };			//标定高度
 
 u8 checkIsCalib();		//检查是否标定过
 
+void set_calibration_heigh(u8 point);
+
 u32 twoPoint_line(u32 x, u32 x1, u32 y1, u32 x2, u32 y2);
 void fixedHeight(u32 distance);	//固定高度
 

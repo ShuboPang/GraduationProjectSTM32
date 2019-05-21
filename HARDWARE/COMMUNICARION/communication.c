@@ -5,20 +5,111 @@
 #include "route.h"
 #include "JY901.h"
 
-static u32 angleInfo[] = { 0,0,0 };   // 角度稳态偏差  距离值
+#define FILTER_TIMES 5
+
+
+static u32 angleInfo[] = { 0,0,0 };   // 陀螺仪偏差值，超声波实时值
+static u32 angleFilterInfo[] = { 0,0,0 };	//滤波之后的值
+
+static int32 tmp[3][FILTER_TIMES] = { 0 };
+
+//平均值滤波
+void averageFiltering()
+{
+	static u8 count[3] = { 0 };
+	//x
+	if (count[0] != (FILTER_TIMES-1))
+	{
+		tmp[0][count[0]] = stcAngle.Angle[0];
+		count[0]++;
+	}
+	else
+	{
+		for (u8 i = 0; i < (FILTER_TIMES - 1); i++)
+		{
+			tmp[0][i] = tmp[0][i + 1];
+		}
+		tmp[0][count[0]] = stcAngle.Angle[0];
+	}
+	
+	//y
+	u8 y = 1;
+	if (count[y] != (FILTER_TIMES - 1))
+	{
+		tmp[y][count[y]] = stcAngle.Angle[y];
+		count[y]++;
+	}
+	else
+	{
+		for (u8 i = 0; i < (FILTER_TIMES - 1); i++)
+		{
+			tmp[y][i] = tmp[y][i + 1];
+		}
+		tmp[y][count[y]] = stcAngle.Angle[y];
+	}
+
+	//z
+	 y = 2;
+	if (count[y] != (FILTER_TIMES - 1))
+	{
+		tmp[y][count[y]] = angleInfo[2];
+		count[y]++;
+	}
+	else
+	{
+		for (u8 i = 0; i < (FILTER_TIMES - 1); i++)
+		{
+			tmp[y][i] = tmp[y][i + 1];
+		}
+		tmp[y][count[y]] = angleInfo[2];
+	}
+
+	int32 sum[3] = { 0 };
+	for (u8 i = 0; i < 3; i++)
+	{
+		for (u8 j = 0; j < FILTER_TIMES; j++)
+		{
+			sum[i] += tmp[i][j];
+		}
+		angleFilterInfo[i] = sum[i] / FILTER_TIMES;
+	}
+
+}
 
 
 //设置角度原点
 void setAngleOrgin()
 {
-	angleInfo[0] = stcAngle.Angle[0];
-	angleInfo[1] = stcAngle.Angle[1];
+	angleInfo[0] = angleFilterInfo[0];
+	angleInfo[1] = angleFilterInfo[1];
 }
 
 void setDistance(u32 dis)
 {
 	angleInfo[2] = dis;
 }
+
+
+//获取mpu6050 x轴偏角
+u32 getMpu6050_x()
+{
+	return angleFilterInfo[0]- angleInfo[0];
+}
+
+
+//获取mpu6050 y轴偏角
+u32 getMpu6050_y()
+{
+	return angleFilterInfo[1] - angleInfo[1];
+}
+
+
+//获取高度值
+u32 getHeight()
+{
+	return angleFilterInfo[2];
+}
+
 
 u32 checkSum(char *src)
 {
@@ -53,12 +144,12 @@ void getMpu6050()
 	//rev:1; 
 	//校验和：1；
 	//结束位：1
-
 	s_buff[MPU6050_MODE][1] = MPU6050_MODE + 1;			
 
-	s_buff[MPU6050_MODE][2] = stcAngle.Angle[0]- angleInfo[0];
-	s_buff[MPU6050_MODE][3] = stcAngle.Angle[1]- angleInfo[1];
-	s_buff[MPU6050_MODE][4] = angleInfo[2];
+	averageFiltering();
+	s_buff[MPU6050_MODE][2] = getMpu6050_x();
+	s_buff[MPU6050_MODE][3] = getMpu6050_y();
+	s_buff[MPU6050_MODE][4] = getHeight();
 	s_buff[MPU6050_MODE][5] = 0;
 	
 }
@@ -179,7 +270,16 @@ void recv()
 	case MOTOR2_N_LIMIT:
 	case MOTOR3_N_LIMIT:
 		setNegativeLimit(i / 10 + MOTOR_START_NUM, data);
-			
+	
+	case CALIBRATION_1:
+	case CALIBRATION_2:
+	case CALIBRATION_3:
+	case CALIBRATION_4:
+	case CALIBRATION_5:
+		set_calibration_heigh(i - CALIBRATION_1);
+		break;
+
+
 	case AUTO_1:	//固定高度
 		fixedHeight(data);
 

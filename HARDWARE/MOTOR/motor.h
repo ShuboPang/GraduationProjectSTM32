@@ -23,7 +23,7 @@
 #define MOTOR3 PEout(15)	 
 
 void motors_init(void);												//所有电机端口初始化
-void motor_pos_init();
+void motor_pos_init(void);
 void setOrigin(unsigned char id);									//设置电机原点
 void motorSetEn(unsigned char id, unsigned char flag);				//设置电机使能
 void motorSetDir(unsigned char id,unsigned char flag);				//设置电机转动方向
@@ -35,8 +35,8 @@ void setMotorPos_rela(unsigned char id,int pulse);					//设置电机相对脉冲数
 void setMotorSpeed(unsigned char id, u16 speed);
 void setPositiveLimit(unsigned char id, u32 limit);
 void setNegativeLimit(unsigned char id, u32 limit);
-void emergencyStop();													//紧急停止
-u8 getMotorsIsEnd();
+void emergencyStop(void);													//紧急停止
+u8 getMotorsIsEnd(void);
 u8 getMotorIsEnd(u8 id);
 static void checkLImit(void);
 static void setMotorPulse(void);
