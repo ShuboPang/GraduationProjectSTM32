@@ -6,11 +6,12 @@
 motorPulse[0] : 实时脉冲数 ；
 motorPulse[1] : 目标脉冲数 ;
 motorPulse[2] : 电机速度；
-motorPulse[3] : 方向 ;
+motorPulse[3] : 实时转动方向 ;
 motorPulse[4] : 正极限 ;
 motorPulse[5] : 负极限；
+motorPulse[6] : 电机正转方向；
 */
-static u32 motorPulse[6][MOTOR_NUM] = { 0 };
+static u32 motorPulse[7][MOTOR_NUM] = { 0 };
 
 
 //运动结束标志位
@@ -105,8 +106,8 @@ void setOrigin(unsigned char id)
 {
 	if (id >= 1 && id <= 3)
 	{
-		motorPulse[0][id - MOTOR_START_NUM] = 0;
-		motorPulse[1][id - MOTOR_START_NUM] = 0;
+		motorPulse[0][id - MOTOR_START_NUM] = 5000;
+		motorPulse[1][id - MOTOR_START_NUM] = 5000;
 	}
 }
 

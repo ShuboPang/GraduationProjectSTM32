@@ -82,4 +82,5 @@ void Tim3_taskGo()
 	checkIsCalib();
 	motorTaskGo();
 	sendTo(50);
+	
 }
