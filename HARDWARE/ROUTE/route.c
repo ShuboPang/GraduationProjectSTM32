@@ -155,7 +155,12 @@ void route_setPulse()
 					//判断是否对称运动
 					if (getSymmetry())
 					{
-
+						for (u8 j = 0; j < MOTOR_NUM; j++)
+						{
+							u32 cur_pulse = getMotorPulse(j + MOTOR_START_NUM);
+							setMotorPos_abs(j + MOTOR_START_NUM, calibration_heigh[1][j]*2 - cur_pulse);
+						}
+						speed_Planning();
 					}
 					else
 					{
