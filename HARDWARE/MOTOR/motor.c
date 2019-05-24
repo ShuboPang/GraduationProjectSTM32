@@ -23,14 +23,14 @@ void motors_init(void)
 
 	  GPIO_InitTypeDef  GPIO_InitStructure;
 
-  	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);
+  	  RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);
 
  	  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7 | GPIO_Pin_8 | GPIO_Pin_9 | GPIO_Pin_10 | GPIO_Pin_11 | GPIO_Pin_12 | GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15;
-  	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-  	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-  	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  	  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+  	  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+  	  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
  	  GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
-  	GPIO_Init(GPIOE, &GPIO_InitStructure);
+  	  GPIO_Init(GPIOE, &GPIO_InitStructure);
 	
 	  GPIO_SetBits(GPIOE,GPIO_Pin_7 | GPIO_Pin_8 | GPIO_Pin_9 | GPIO_Pin_10 | GPIO_Pin_11 | GPIO_Pin_12 | GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15);
 	  for (int i = 1; i <= 3; i++)
@@ -47,16 +47,9 @@ void motor_pos_init()
 	for (i = 0; i < MOTOR_NUM; i++)
 	{
 		motorPulse[0][i] = 5000;
-	}
-	for (i = 0; i < MOTOR_NUM; i++)
-	{
 		motorPulse[1][i] = 5000;
-	}
-	for (i = 0; i < MOTOR_NUM; i++)
-	{
 		motorPulse[2][i] = 10;
-	}
-	
+	}	
 }
 
 
@@ -122,6 +115,11 @@ void setOrigin(unsigned char id)
 */
 void motorSetDir(unsigned char id,unsigned char flag)
 {
+	//电机正转是反向
+	if (motorPulse[6][id-MOTOR_START_NUM])
+	{
+		flag = !flag;
+	}
 
 	switch(id)
 	{
@@ -158,9 +156,24 @@ void motorSetDir(unsigned char id,unsigned char flag)
 	default:
 		break;
 	}
+	//电机正转是反向
+	//Wx2019052308195450099
+	if (motorPulse[6][id - MOTOR_START_NUM])
+	{
+		flag = !flag;
+	}
 	if (id >= MOTOR_START_NUM && id <= MOTOR_NUM)
 	{
 		motorPulse[3][id - MOTOR_START_NUM] = !flag;
+	}
+}
+
+//设置电机正转方向
+void setMotorDir(unsigned char id, unsigned char flag)
+{
+	if (id >= MOTOR_START_NUM && id <= MOTOR_NUM)
+	{
+		motorPulse[6][id - MOTOR_START_NUM] = flag;
 	}
 }
 
@@ -208,7 +221,11 @@ void setMotorPos_abs(unsigned char id,u32 pulse)
 {
 	if (id >= MOTOR_START_NUM && id <= MOTOR_NUM)
 	{
-		 motorPulse[1][id- MOTOR_START_NUM] =  pulse;
+		if (getMotorSpeed(id))
+		{
+			motorPulse[1][id - MOTOR_START_NUM] = pulse;
+		}
+		
 	}
 }
 
@@ -224,7 +241,10 @@ void setMotorPos_rela(unsigned char id,int pulse)
 {
 	if (id >= MOTOR_START_NUM && id <= MOTOR_NUM)
 	{
-		motorPulse[1][id- MOTOR_START_NUM] = motorPulse[0][id- MOTOR_START_NUM] + pulse;
+		if (getMotorSpeed(id))
+		{
+			motorPulse[1][id - MOTOR_START_NUM] = motorPulse[0][id - MOTOR_START_NUM] + pulse;
+		}		
 	}
 }
 
@@ -267,6 +287,7 @@ void emergencyStop()
 
 
 //获取某个电机是否移动结束
+//结束返回1 ，未结束返回0
 u8 getMotorIsEnd(u8 id)
 {
 	if (id >= MOTOR_START_NUM && id <= MOTOR_NUM)
@@ -277,9 +298,10 @@ u8 getMotorIsEnd(u8 id)
 
 
 //获取全部电机是否移动结束
+//结束返回1 ，未结束返回0
 u8 getMotorsIsEnd()
 {
-	return motorEnd[0] && motorEnd[1] && motorEnd[1];
+	return motorEnd[0] && motorEnd[1] && motorEnd[2];
 }
 
 
@@ -391,7 +413,7 @@ static void setMotorPulse(void)
 void motorTaskGo()
 {
 	unsigned char i = 0;
-	checkLImit();
+	//checkLImit();
 	for ( i = 0; i < MOTOR_NUM; i++)
 	{
 		//根据目标脉冲和当前脉冲判断电机转动方向
@@ -406,5 +428,3 @@ void motorTaskGo()
 	}
 	setMotorPulse();
 }
-
-

@@ -16,6 +16,16 @@ static u8 isAuto = 0;//是否处于自动模式
 
 static u32 calibration_heigh[CALIB_HEIGH_POINT][MOTOR_NUM] = { 0 };			//标定高度5个点的脉冲
 
+static u32 calibration_angle[CALIB_ANGLE_POINT][MOTOR_NUM] = { 0 };			//标定角度6个点的脉冲
+
+#define MAX_COUNT 256
+
+//需要经过的目标位置
+static struct route_pulse
+{
+	u8 count;
+	u32 pulse[3][MAX_COUNT];
+}Route_pulse;
 
 /*********************  设置自动运行时的参数  ******************************/
 
@@ -79,8 +89,125 @@ u8 getSymmetry()
 	return isSymmetry;
 }
 
+//开始自动模式
+void startAutoMode()
+{
+	isAuto = 1;
+}
+
+//停止自动模式  会将当前正在运行的位置运行完成后结束，不会立即停止
+void endAutoMode()
+{
+	isAuto = 0;
+}
+
 /***********************************************************/
 
+//设置单个轴的目标位置
+void set_route_one_pulse(u8 i,u8 id, u32 pulse)
+{
+	if (i >= MOTOR_START_NUM && i <= MOTOR_NUM)
+	{
+		Route_pulse.pulse[id - MOTOR_START_NUM][i + MOTOR_START_NUM] = pulse;
+	}
+}
+
+//重置路径脉冲位置
+void reset_route()
+{
+	Route_pulse.count = 0;			//脉冲计数置零，就会重新覆盖位置
+}
+
+//在路径规划中添加脉冲位置
+void route_add(u32 *pulse)
+{
+	Route_pulse.count++;
+	Route_pulse.pulse[0][Route_pulse.count - 1] = pulse[0];
+	Route_pulse.pulse[1][Route_pulse.count - 1] = pulse[1];
+	Route_pulse.pulse[2][Route_pulse.count - 1] = pulse[2];
+}
+
+//将规划后的目标脉冲依次运动
+void route_setPulse()
+{
+	static u32 i = 0;
+	static u32 count = 0;		//循环计数
+	if (isAuto)
+	{
+		if (getMotorsIsEnd()&&(i != Route_pulse.count))
+		{
+			for (u8 j = 0; j < MOTOR_NUM; j++)
+			{
+				setMotorPos_abs(j + MOTOR_START_NUM, Route_pulse.pulse[j][i]);
+			}
+			speed_Planning();
+			i++;
+		}
+		//轨迹位置发送完成
+		else if (i >= Route_pulse.count)
+		{
+			//判断运动是否结束，结束之后才可以发送下一个点的位置
+			if (getMotorsIsEnd())
+			{
+				//判断是否开启循环
+				if (getCycle())
+				{
+					//判断是否对称运动
+					if (getSymmetry())
+					{
+
+					}
+					else
+					{
+						for (u8 j = 0; j < MOTOR_NUM; j++)
+						{
+							setMotorPos_abs(j + MOTOR_START_NUM, calibration_heigh[1][j]);
+						}
+						speed_Planning();
+					}
+
+					if (count >= getCycleTimes())
+					{
+						isAuto = 0;
+						count = 0;
+					}
+					else
+					{
+						count++;
+					}
+
+				}
+				else
+				{
+					//结束自动运行
+					isAuto = 0;
+					count = 0;
+				}
+				i = 0;
+
+				//自动运行轨迹结束
+				if (isAuto == 0)
+				{
+					
+					if (getComeBack())
+					{
+						for (u8 j = 0; j < MOTOR_NUM; j++)
+						{
+							if (getMotorPulse(j + MOTOR_START_NUM) != calibration_heigh[1][j])
+							{
+								setMotorPos_abs(j + MOTOR_START_NUM, calibration_heigh[1][j]);
+							}
+							speed_Planning();
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+
+/***********************************************************/
 
 //检查是否标定过 0:未标定或有错；1：标定过
 u8 checkIsCalib()		
@@ -107,8 +234,17 @@ u32 twoPoint_line(u32 x,u32 x1, u32 y1, u32 x2, u32 y2)
 }
 
 
-//设置标定点的脉冲位置值
+//设置高度标定点的脉冲位置值
 void set_calibration_heigh(u8 point)
+{
+	for (u8 i = 0; i < MOTOR_NUM; i++)
+	{
+		calibration_heigh[point][i] = getMotorPulse(i + 1);
+	}
+}
+
+//设置角度标定点的脉冲位置值
+void set_calibration_angle(u8 point)
 {
 	for (u8 i = 0; i < MOTOR_NUM; i++)
 	{
@@ -118,15 +254,43 @@ void set_calibration_heigh(u8 point)
 
 //速度规划函数
 //通过比较每个轴的目标脉冲与当前脉冲差，使所有轴同时到达指定位置
-void speed_Planning()
+void speed_Planning(void)
 {
 	u32 x_speed = getG_speed();
-	setMotorSpeed(X_MOTOR, x_speed);		//将全局速度设置给x轴
 	u32 y_speed = 0;
-	y_speed = abs((int)(getMotorPulse(X_MOTOR) - getMotorEndPulse(X_MOTOR)))*x_speed / abs((int)(getMotorPulse(Y_MOTOR) - getMotorEndPulse(Y_MOTOR)));
-	setMotorSpeed(Y_MOTOR, y_speed);
 	u32 z_speed = 0;
-	z_speed = abs((int)(getMotorPulse(X_MOTOR) - getMotorEndPulse(X_MOTOR)))*x_speed / abs((int)(getMotorPulse(Z_MOTOR) - getMotorEndPulse(Z_MOTOR)));
+	setMotorSpeed(X_MOTOR, x_speed);		//将全局速度设置给x轴
+	
+	if (getMotorPulse(X_MOTOR) == getMotorEndPulse(X_MOTOR))
+	{
+		y_speed = getG_speed();
+		if (getMotorPulse(Y_MOTOR) == getMotorEndPulse(Y_MOTOR))
+		{
+			z_speed = getG_speed();
+		}
+		else
+		{
+			z_speed = abs((int)(getMotorPulse(Y_MOTOR) - getMotorEndPulse(Y_MOTOR)))*y_speed / abs((int)(getMotorPulse(Z_MOTOR) - getMotorEndPulse(Z_MOTOR)));
+		}
+	}
+	else
+	{
+		y_speed = abs((int)(getMotorPulse(X_MOTOR) - getMotorEndPulse(X_MOTOR)))*x_speed / abs((int)(getMotorPulse(Y_MOTOR) - getMotorEndPulse(Y_MOTOR)));
+		z_speed = abs((int)(getMotorPulse(X_MOTOR) - getMotorEndPulse(X_MOTOR)))*x_speed / abs((int)(getMotorPulse(Z_MOTOR) - getMotorEndPulse(Z_MOTOR)));
+	}
+	if (x_speed < 10)
+	{
+		x_speed = 10;
+	}
+	if (y_speed < 10)
+	{
+		y_speed = 10;
+	}
+	if (z_speed < 10)
+	{
+		z_speed = 10;
+	}
+	setMotorSpeed(Y_MOTOR, y_speed);
 	setMotorSpeed(Z_MOTOR, z_speed);
 }
 
@@ -135,6 +299,7 @@ void speed_Planning()
 void fixedHeight(u32 distance)
 {
 	u32 ret = 0;
+	u32 pulse_tmp[3] = { 0 };
 	for (u8 i = 0; i < MOTOR_NUM; i++)
 	{
 		if (distance < 5 * DISTANCE_PRECISION)
@@ -161,8 +326,40 @@ void fixedHeight(u32 distance)
 		{
 			ret = 0;
 		}
-		setMotorPos_abs(i + MOTOR_START_NUM, ret);
+		pulse_tmp[i] = ret;
+//		setMotorPos_abs(i + MOTOR_START_NUM, ret);
 	}
-	isAuto = 1;
-	speed_Planning();
+	route_add(pulse_tmp);
+}
+
+//固定角度
+void fixedAngle(u32 angle)
+{
+
+}
+
+//固定长度
+void fixedLength(u32 data)
+{
+	u32 pulse_tmp[3] = { 0 };
+	for (u8 i = 0; i < MOTOR_NUM; i++)
+	{
+		if (data < 5 * DISTANCE_PRECISION)
+		{
+			pulse_tmp[i] = twoPoint_line(data, 0, calibration_heigh[1][i], 5 * DISTANCE_PRECISION, calibration_angle[0][i]);
+		}
+		else if (data >= 5 * DISTANCE_PRECISION&&data <= 10 * DISTANCE_PRECISION)
+		{
+			pulse_tmp[i] = twoPoint_line(data, 5 * DISTANCE_PRECISION, calibration_angle[0][i], 10 * DISTANCE_PRECISION, calibration_angle[1][i]);
+		}
+		else if (data >= 10 * DISTANCE_PRECISION&&data <= 15 * DISTANCE_PRECISION)
+		{
+			pulse_tmp[i] = twoPoint_line(data, 10 * DISTANCE_PRECISION, calibration_angle[1][i], 15 * DISTANCE_PRECISION, calibration_angle[2][i]);
+		}
+		else
+		{
+			pulse_tmp[i] = getMotorPulse(i+ MOTOR_START_NUM);
+		}
+	}
+	route_add(pulse_tmp);
 }

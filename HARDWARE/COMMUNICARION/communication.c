@@ -279,7 +279,14 @@ void recv()
 	case MOTOR2_N_LIMIT:
 	case MOTOR3_N_LIMIT:
 		setNegativeLimit(i / 10 + MOTOR_START_NUM, data);
-	
+
+		//设置电机正转方向
+	case MOTOR1_DIR:
+	case MOTOR2_DIR:
+	case MOTOR3_DIR:
+		setMotorDir(i / 10 + MOTOR_START_NUM, data);
+		break;
+
 		//标定点
 	case CALIBRATION_1:
 	case CALIBRATION_2:
@@ -288,7 +295,14 @@ void recv()
 	case CALIBRATION_5:
 		set_calibration_heigh(i - CALIBRATION_1);
 		break;
-
+	case CALIBRATION_6:
+	case CALIBRATION_7:
+	case CALIBRATION_8:
+	case CALIBRATION_9:
+	case CALIBRATION_10:
+	case CALIBRATION_11:
+		set_calibration_angle(i - CALIBRATION_1);
+		break;
 
 	case AUTO_G_SPEED:		//设置全局速度 
 		setG_speed(data);
@@ -307,7 +321,19 @@ void recv()
 		break;
 
 	case AUTO_1:	//固定高度运行
+		reset_route();
 		fixedHeight(data);
+		startAutoMode();
+		break;
+	case AUTO_2:	//固定角度运行
+		reset_route();
+		fixedAngle(data);
+		startAutoMode();
+		break;
+	case AUTO_3:	//固定长度运行
+		reset_route();
+		fixedLength(data);
+		startAutoMode();
 		break;
 
 	default:

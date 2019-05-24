@@ -72,15 +72,9 @@ void TIM3_IRQHandler(void)
 //	0.2ms定时中断进入函数
 void Tim3_taskGo()
 {
-	counter++;
-	if (counter >= 1000)
-	{
-		stopDisRun();
-	}
 	setErrorState(NONE);	//清除报警
 	LED_RunFlash(2500);
 	checkIsCalib();
 	motorTaskGo();
-	sendTo(50);
-	
+	route_setPulse();
 }

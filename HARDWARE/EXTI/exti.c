@@ -15,13 +15,29 @@ static u8 echoState[2] = { 0 };
 //外部中断0服务程序
 void EXTI0_IRQHandler(void)
 {
-	resetCounter();//清空计数器
+	
+	if (getEcho())
+	{
+		//上升沿中断服务函数   计时器开始计时
+		TIM_SetCounter(TIM2, 0);
+		EXTIX_Init_Down();
+	}
+	else 
+	{
+		//下降沿中断服务函数   计时器停止计时
+		u32 dis_count = TIM_GetCounter(TIM2);
+		TIM_Cmd(TIM2, DISABLE);
+		u32 distance_cm = (unsigned int)(((long)(dis_count) * 1.7));
+		setDistance(distance_cm);
+		disState = 0;
+		EXTIX_Init();
+	}
 	EXTI_ClearITPendingBit(EXTI_Line0); //清除LINE0上的中断标志位 
 }	
 
 	   
 //外部中断初始化程序
-//初始化PA0为中断输入.
+//初始化PE0为中断输入.
 void EXTIX_Init(void)
 {
 	 NVIC_InitTypeDef   NVIC_InitStructure;
@@ -29,7 +45,7 @@ void EXTIX_Init(void)
 	
 	 RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);//使能SYSCFG时钟
 	
-	 SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOE, EXTI_PinSource0);//PB0 连接到中断线0
+	 SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOE, EXTI_PinSource0);//PE0 连接到中断线0
 
 
 	  /* 配置EXTI_Line0 */
@@ -44,7 +60,32 @@ void EXTIX_Init(void)
 	  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x02;//子优先级2
 	  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;//使能外部中断通道
 	  NVIC_Init(&NVIC_InitStructure);//配置
+}
 
+//外部中断初始化程序
+//初始化PE0为中断输入.
+void EXTIX_Init_Down(void)
+{
+	NVIC_InitTypeDef   NVIC_InitStructure;
+	EXTI_InitTypeDef   EXTI_InitStructure;
+
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);//使能SYSCFG时钟
+
+	SYSCFG_EXTILineConfig(EXTI_PortSourceGPIOE, EXTI_PinSource0);//PE0 连接到中断线0
+
+
+																 /* 配置EXTI_Line0 */
+	EXTI_InitStructure.EXTI_Line = EXTI_Line0;//LINE0
+	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;//中断事件
+	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling; //下降沿触发 
+	EXTI_InitStructure.EXTI_LineCmd = ENABLE;//使能LINE0
+	EXTI_Init(&EXTI_InitStructure);//配置
+
+	NVIC_InitStructure.NVIC_IRQChannel = EXTI0_IRQn;//外部中断0
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0x00;//抢占优先级0
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0x02;//子优先级2
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;//使能外部中断通道
+	NVIC_Init(&NVIC_InitStructure);//配置
 }
 
 void Dis_Init(void)
@@ -80,7 +121,7 @@ void Timer_Config()
 	TIM_TimeBaseInitStructer.TIM_CounterMode = TIM_CounterMode_Up;
 	/*定时器初始化完成*/
 	TIM_TimeBaseInit(TIM2, &TIM_TimeBaseInitStructer);
-		TIM_ClearFlag(TIM2, TIM_FLAG_Update);
+	TIM_ClearFlag(TIM2, TIM_FLAG_Update);
 	TIM_Cmd(TIM2, DISABLE);//¹关闭定时器使能
 }
 
@@ -120,40 +161,39 @@ void stopDisRun()
 
 void GetDistanceDelay(void)
 {
-	disState = 1;
+	echoState[1] = getEcho();
 	u32 distance_cm=0;
-	setTrig(1);
-	TIM_SetCounter(TIM2, 0);
-	TIM_Cmd(TIM2, ENABLE);//使能TIM2定时器
-	while(TIM_GetCounter(TIM2) < 11);
-	setTrig(0);
-	TIM_SetCounter(TIM2, 0);
+	if (!IsDisRunning())
+	{
+		setTrig(1);
+		TIM_SetCounter(TIM2, 0);
+		TIM_Cmd(TIM2, ENABLE);//使能TIM2定时器
+		while (TIM_GetCounter(TIM2) < 11);
+		setTrig(0);
+		TIM_SetCounter(TIM2, 0);
+		disState = 1;
+	}
+	else
+	{
+		/*
+		if ((echoState[0] == 1) && (echoState[1] == 0))
+		{
+			u32 dis_count = TIM_GetCounter(TIM2);
+			TIM_Cmd(TIM2, DISABLE);
+			distance_cm = (unsigned int)(((long)(dis_count) * 1.7));
+			setDistance(distance_cm);
+			disState = 0;
+		}
+		*/
+		
+		if (TIM_GetCounter(TIM2) > 60000)
+		{
+			disState = 0;
+			distance_cm = 0;
+			TIM_Cmd(TIM2, DISABLE);
+			return;
+		}
+	}	
+	echoState[0] = echoState[1];
 	
-	while(getEcho() == 0)
-	{
-		if(TIM_GetCounter(TIM2) > 60000)
-		{
-			disState = 0;
-			distance_cm = 0;
-			TIM_Cmd(TIM2, DISABLE);
-			return;
-		}
-	}
-	TIM_SetCounter(TIM2, 0);
-	while(getEcho() == 1)
-	{
-		int count = TIM_GetCounter(TIM2);
-		if(count > 60000)
-		{
-			disState = 0;
-			distance_cm = 0;
-			TIM_Cmd(TIM2, DISABLE);
-			return;
-		}
-	}
-	u32 dis_count = TIM_GetCounter(TIM2);
-	TIM_Cmd(TIM2, DISABLE);
-	distance_cm = (unsigned int)(((long)(dis_count) * 1.7));
-	setDistance(distance_cm);
-	disState = 0;
 }
