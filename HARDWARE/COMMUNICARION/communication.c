@@ -336,6 +336,16 @@ void recv()
 		startAutoMode();
 		break;
 
+	case AUTO_4:	//»Œ“‚Œª÷√
+		reset_route();
+		startAutoMode();
+		break;
+
+	case AUTO_5:	//ª≠‘≤
+		reset_route();
+		circle(data);
+		startAutoMode();
+		break;
 	default:
 		break;
 	}

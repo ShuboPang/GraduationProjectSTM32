@@ -18,12 +18,12 @@ static u32 calibration_heigh[CALIB_HEIGH_POINT][MOTOR_NUM] = { 0 };			//标定高度
 
 static u32 calibration_angle[CALIB_ANGLE_POINT][MOTOR_NUM] = { 0 };			//标定角度6个点的脉冲
 
-#define MAX_COUNT 256
+#define MAX_COUNT 400
 
 //需要经过的目标位置
 static struct route_pulse
 {
-	u8 count;
+	u32 count;
 	u32 pulse[3][MAX_COUNT];
 }Route_pulse;
 
@@ -367,8 +367,8 @@ void fixedAngle(u32 angle)
 	}
 	*/
 	pulse_tmp[0] = getMotorPulse(X_MOTOR);
-	pulse_tmp[1] = -0.0644*((float)angle)*((float)angle)+16.22*((float)angle)-393+ calibration_heigh[1][1];
-	pulse_tmp[2] = -0.081*((float)angle)*((float)angle) + 9.2965*((float)angle) +373 + calibration_heigh[1][1];
+	pulse_tmp[1] = -0.0713*((float)angle)*((float)angle)+17.051*((float)angle)-394.5+ calibration_heigh[1][1];
+	pulse_tmp[2] = -0.0726*((float)angle)*((float)angle) + 8.2786*((float)angle) +390.1 + calibration_heigh[1][2];
 
 	route_add(pulse_tmp);
 }
@@ -397,4 +397,41 @@ void fixedLength(u32 data)
 		}
 	}
 	route_add(pulse_tmp);
+}
+
+
+//画圆
+void circle(u32 radius)
+{
+	u32 pulse_tmp[3] = { 0 };
+	for (u32 angle = 0; angle < 180; angle++)
+	{
+		pulse_tmp[0] = calibration_heigh[1][0];
+		pulse_tmp[1] = -0.0713*((float)angle)*((float)angle) + 17.051*((float)angle) - 394.5 + calibration_heigh[1][1];
+		pulse_tmp[2] = -0.0726*((float)angle)*((float)angle) + 8.2786*((float)angle) + 390.1 + calibration_heigh[1][2];
+
+		/*
+		pulse_tmp[0] = (pulse_tmp[0] - calibration_heigh[1][0]) * radius / 10 + calibration_heigh[1][0];
+		pulse_tmp[1] = (pulse_tmp[1] - calibration_heigh[1][1]) * radius / 10 + calibration_heigh[1][1];
+		pulse_tmp[2] = (pulse_tmp[2] - calibration_heigh[1][2]) * radius / 10 + calibration_heigh[1][2];
+		*/
+
+		route_add(pulse_tmp);
+	}
+
+
+	for (u32 angle = 0; angle < 180; angle++)
+	{
+		pulse_tmp[0] = -0.1218*((float)angle)*((float)angle) + 19.423*((float)angle) + calibration_heigh[1][0];;
+		pulse_tmp[1] = -0.0397*((float)angle)*((float)angle) + 0.4048*((float)angle) + 372.3 + calibration_heigh[1][1];
+		pulse_tmp[2] = -0.0364*((float)angle)*((float)angle) + 9.4643*((float)angle) - 467 + calibration_heigh[1][2];
+
+		/*
+		pulse_tmp[0] = (pulse_tmp[0] - calibration_heigh[1][0]) * radius / 10 + calibration_heigh[1][0];
+		pulse_tmp[1] = (pulse_tmp[1] - calibration_heigh[1][1]) * radius / 10 + calibration_heigh[1][1];
+		pulse_tmp[2] = (pulse_tmp[2] - calibration_heigh[1][2]) * radius / 10 + calibration_heigh[1][2];
+		*/
+
+		route_add(pulse_tmp);
+	}
 }

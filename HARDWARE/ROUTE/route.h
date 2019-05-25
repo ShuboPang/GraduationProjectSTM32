@@ -69,4 +69,6 @@ void speed_Planning(void);		//速度规划函数
 void fixedHeight(u32 distance);	//固定高度
 void fixedAngle(u32 angle);		//固定角度
 void fixedLength(u32 data);		//固定长度
+								
+void circle(u32 radius);			//画圆
 #endif // !_ROUTE_H_
