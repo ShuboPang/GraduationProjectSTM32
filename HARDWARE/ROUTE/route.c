@@ -340,7 +340,37 @@ void fixedHeight(u32 distance)
 //固定角度
 void fixedAngle(u32 angle)
 {
+	u32 pulse_tmp[3] = { 0 };
+	/*
+	for (u8 i = 0; i < MOTOR_NUM; i++)
+	{
+		if (angle < 30 * DISTANCE_PRECISION)
+		{
+			pulse_tmp[i] = twoPoint_line(angle, 0, calibration_heigh[1][i], 5 * DISTANCE_PRECISION, calibration_angle[1][i]);
+		}
+		else if (angle >= 30 * DISTANCE_PRECISION&&angle <= 60 * DISTANCE_PRECISION)
+		{
+			pulse_tmp[i] = twoPoint_line(angle, 30 * DISTANCE_PRECISION, calibration_angle[1][i], 60 * DISTANCE_PRECISION, calibration_angle[3][i]);
+		}
+		else if (angle >= 60* DISTANCE_PRECISION&&angle <= 120 * DISTANCE_PRECISION)
+		{
+			pulse_tmp[i] = twoPoint_line(angle, 60 * DISTANCE_PRECISION, calibration_angle[3][i], 120 * DISTANCE_PRECISION, calibration_angle[4][i]);
+		}
+		else if (angle >= 120 * DISTANCE_PRECISION&&angle <= 150 * DISTANCE_PRECISION)
+		{
+			pulse_tmp[i] = twoPoint_line(angle, 120 * DISTANCE_PRECISION, calibration_angle[4][i], 150 * DISTANCE_PRECISION, calibration_angle[5][i]);
+		}
+		else
+		{
+			pulse_tmp[i] = getMotorPulse(i + MOTOR_START_NUM);
+		}
+	}
+	*/
+	pulse_tmp[0] = getMotorPulse(X_MOTOR);
+	pulse_tmp[1] = -0.0644*((float)angle)*((float)angle)+16.22*((float)angle)-393+ calibration_heigh[1][1];
+	pulse_tmp[2] = -0.081*((float)angle)*((float)angle) + 9.2965*((float)angle) +373 + calibration_heigh[1][1];
 
+	route_add(pulse_tmp);
 }
 
 //固定长度
