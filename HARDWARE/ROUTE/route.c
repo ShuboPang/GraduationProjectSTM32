@@ -366,10 +366,20 @@ void fixedAngle(u32 angle)
 		}
 	}
 	*/
-	pulse_tmp[0] = getMotorPulse(X_MOTOR);
-	pulse_tmp[1] = -0.0713*((float)angle)*((float)angle)+17.051*((float)angle)-394.5+ calibration_heigh[1][1];
-	pulse_tmp[2] = -0.0726*((float)angle)*((float)angle) + 8.2786*((float)angle) +390.1 + calibration_heigh[1][2];
-
+	if (angle < 180 && angle >= 0)
+	{
+		pulse_tmp[0] = calibration_heigh[1][0];
+		pulse_tmp[1] = -0.0713*((float)angle)*((float)angle) + 17.051*((float)angle) - 394.5 + calibration_heigh[1][1];
+		pulse_tmp[2] = -0.0726*((float)angle)*((float)angle) + 8.2786*((float)angle) + 390.1 + calibration_heigh[1][2];
+	}
+	else if(angle < 360 && angle >= 180)
+	{
+		angle -= 180;
+		pulse_tmp[0] = -0.1218*((float)angle)*((float)angle) + 19.423*((float)angle) + calibration_heigh[1][0];;
+		pulse_tmp[1] = -0.0397*((float)angle)*((float)angle) + 0.4048*((float)angle) + 372.3 + calibration_heigh[1][1];
+		pulse_tmp[2] = -0.0364*((float)angle)*((float)angle) + 9.4643*((float)angle) - 467 + calibration_heigh[1][2];
+	}
+	
 	route_add(pulse_tmp);
 }
 
