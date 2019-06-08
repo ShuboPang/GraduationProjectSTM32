@@ -127,6 +127,12 @@ void route_add(u32 *pulse)
 	Route_pulse.pulse[2][Route_pulse.count - 1] = pulse[2];
 }
 
+//返回需要运动的位置数量
+u32 get_route_count()
+{
+	return Route_pulse.count;
+}
+
 //将规划后的目标脉冲依次运动
 void route_setPulse()
 {
@@ -162,7 +168,7 @@ void route_setPulse()
 						}
 						speed_Planning();
 					}
-					else
+					else if(get_route_count() == 1)
 					{
 						for (u8 j = 0; j < MOTOR_NUM; j++)
 						{
@@ -387,26 +393,29 @@ void fixedAngle(u32 angle)
 void fixedLength(u32 data)
 {
 	u32 pulse_tmp[3] = { 0 };
-	for (u8 i = 0; i < MOTOR_NUM; i++)
+	for (u32 j = 0; j <= data; j++)
 	{
-		if (data < 5 * DISTANCE_PRECISION)
+		for (u8 i = 0; i < MOTOR_NUM; i++)
 		{
-			pulse_tmp[i] = twoPoint_line(data, 0, calibration_heigh[1][i], 5 * DISTANCE_PRECISION, calibration_angle[0][i]);
+			if (data < 5 * DISTANCE_PRECISION)
+			{
+				pulse_tmp[i] = twoPoint_line(data, 0, calibration_heigh[1][i], 5 * DISTANCE_PRECISION, calibration_angle[0][i]);
+			}
+			else if (data >= 5 * DISTANCE_PRECISION&&data <= 10 * DISTANCE_PRECISION)
+			{
+				pulse_tmp[i] = twoPoint_line(data, 5 * DISTANCE_PRECISION, calibration_angle[0][i], 10 * DISTANCE_PRECISION, calibration_angle[1][i]);
+			}
+			else if (data >= 10 * DISTANCE_PRECISION&&data <= 15 * DISTANCE_PRECISION)
+			{
+				pulse_tmp[i] = twoPoint_line(data, 10 * DISTANCE_PRECISION, calibration_angle[1][i], 15 * DISTANCE_PRECISION, calibration_angle[2][i]);
+			}
+			else
+			{
+				pulse_tmp[i] = getMotorPulse(i + MOTOR_START_NUM);
+			}
 		}
-		else if (data >= 5 * DISTANCE_PRECISION&&data <= 10 * DISTANCE_PRECISION)
-		{
-			pulse_tmp[i] = twoPoint_line(data, 5 * DISTANCE_PRECISION, calibration_angle[0][i], 10 * DISTANCE_PRECISION, calibration_angle[1][i]);
-		}
-		else if (data >= 10 * DISTANCE_PRECISION&&data <= 15 * DISTANCE_PRECISION)
-		{
-			pulse_tmp[i] = twoPoint_line(data, 10 * DISTANCE_PRECISION, calibration_angle[1][i], 15 * DISTANCE_PRECISION, calibration_angle[2][i]);
-		}
-		else
-		{
-			pulse_tmp[i] = getMotorPulse(i+ MOTOR_START_NUM);
-		}
+		route_add(pulse_tmp);
 	}
-	route_add(pulse_tmp);
 }
 
 

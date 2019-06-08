@@ -53,6 +53,9 @@ void route_setPulse();
 //在路径规划中添加脉冲位置
 void route_add(u32 *pulse);
 
+//返回需要运动的位置数量
+u32 get_route_count();
+
 //重置路径脉冲位置
 void reset_route();
 
