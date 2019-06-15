@@ -12,7 +12,7 @@
 void sys_init()
 {
 	delay_init(168);
-	uart_init(115200);
+	uart_init(9600);
 	Initial_UART2(9600);
 	Initial_UART3(9600);
 	motor_pos_init();
@@ -35,7 +35,7 @@ int main(void)
 	sys_init();
 	while(1)
 	{
-		GetDistanceDelay();
+		//GetDistanceDelay();
 		sendTo(1);
 	}
 }
