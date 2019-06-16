@@ -4,6 +4,7 @@
 #include "error.h"
 #include "route.h"
 #include "JY901.h"
+#include "pca9685.h"
 
 #define FILTER_TIMES 5
 
@@ -222,131 +223,6 @@ void recv()
 	u32 data = ((u32)USART_RX_BUF[2] << 24) + ((u32)USART_RX_BUF[3] << 16) + ((u32)USART_RX_BUF[4] << 8) + ((u32)USART_RX_BUF[5]);
 
 	i = USART_RX_BUF[1];
-	switch (i)
-	{
-		//紧急停止
-	case STOP:
-		emergencyStop();
-		break;
-
-		//电机正转
-	case MOTOR1_TURN_RIGHT:
-	case MOTOR2_TURN_RIGHT:
-	case MOTOR3_TURN_RIGHT:
-		setMotorPos_rela(i / 10 + MOTOR_START_NUM, data);
-		break;
-
-		//电机反转
-	case MOTOR1_TURN_LEFT:
-	case MOTOR2_TURN_LEFT:
-	case MOTOR3_TURN_LEFT:
-		setMotorPos_rela(i / 10 + MOTOR_START_NUM, data*-1);
-		break;
-		
-		//设置电机速度
-	case MOTOR1_SPEED:
-	case MOTOR2_SPEED:
-	case MOTOR3_SPEED:
-		setMotorSpeed(i / 10 + MOTOR_START_NUM, data);
-		break;
-
-		//设置电机位置
-	case MOTOR1_POS:
-	case MOTOR2_POS:
-	case MOTOR3_POS:
-		setMotorPos_abs(i / 10 + MOTOR_START_NUM, data);
-		break;
-
-		//设置电机原点
-	case MOTOR1_ORIGIN:
-	case MOTOR2_ORIGIN:
-	case MOTOR3_ORIGIN:
-		setOrigin(i / 10 + MOTOR_START_NUM);
-		break;
-
-		//设置陀螺仪原点
-	case MPU6050_ORIGIN:
-		setAngleOrgin();
-		break;
-
-		//设置极限
-	case MOTOR1_P_LIMIT:
-	case MOTOR2_P_LIMIT:
-	case MOTOR3_P_LIMIT:
-		setPositiveLimit(i / 10 + MOTOR_START_NUM, data);
-
-	case MOTOR1_N_LIMIT:
-	case MOTOR2_N_LIMIT:
-	case MOTOR3_N_LIMIT:
-		setNegativeLimit(i / 10 + MOTOR_START_NUM, data);
-
-		//设置电机正转方向
-	case MOTOR1_DIR:
-	case MOTOR2_DIR:
-	case MOTOR3_DIR:
-		setMotorDir(i / 10 + MOTOR_START_NUM, data);
-		break;
-
-		//标定点
-	case CALIBRATION_1:
-	case CALIBRATION_2:
-	case CALIBRATION_3:
-	case CALIBRATION_4:
-	case CALIBRATION_5:
-		set_calibration_heigh(i - CALIBRATION_1);
-		break;
-	case CALIBRATION_6:
-	case CALIBRATION_7:
-	case CALIBRATION_8:
-	case CALIBRATION_9:
-	case CALIBRATION_10:
-	case CALIBRATION_11:
-		set_calibration_angle(i - CALIBRATION_1);
-		break;
-
-	case AUTO_G_SPEED:		//设置全局速度 
-		setG_speed(data);
-		break;
-	case AUTO_BACK:
-		setComeBack(data);
-		break;
-	case AUTO_CYCLE:
-		setCycle(data);
-		break;
-	case AUTO_CYCLE_TIMES:
-		setCycleTimes(data);
-		break;
-	case AUTO_SYMMETRY:
-		setSymmetrye(data);
-		break;
-
-	case AUTO_1:	//固定高度运行
-		reset_route();
-		fixedHeight(data);
-		startAutoMode();
-		break;
-	case AUTO_2:	//固定角度运行
-		reset_route();
-		fixedAngle(data);
-		startAutoMode();
-		break;
-	case AUTO_3:	//固定长度运行
-		reset_route();
-		fixedLength(data);
-		startAutoMode();
-		break;
-
-	case AUTO_4:	//任意位置
-		reset_route();
-		startAutoMode();
-		break;
-
-	case AUTO_5:	//画圆
-		reset_route();
-		circle(data);
-		startAutoMode();
-		break;
-	default:
-		break;
-	}
+	u16 pwm = calculate_PWM(data);
+	setPWM(i, 0, pwm);
 }

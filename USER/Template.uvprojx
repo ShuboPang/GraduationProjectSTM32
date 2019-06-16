@@ -337,7 +337,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F40_41xxx,USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>..\CORE;..\SYSTEM\delay;..\SYSTEM\sys;..\SYSTEM\usart;..\USER;..\FWLIB\inc;..\HARDWARE\KEY;..\HARDWARE\LED;..\HARDWARE\MOTOR;..\HARDWARE\TIMER;..\HARDWARE\COMMUNICARION;..\HARDWARE\ERROR;..\HARDWARE\ROUTE;..\HARDWARE\MPU6050;..\HARDWARE\uart3;..\HARDWARE\EXTI</IncludePath>
+              <IncludePath>..\CORE;..\SYSTEM\delay;..\SYSTEM\sys;..\SYSTEM\usart;..\USER;..\FWLIB\inc;..\HARDWARE\KEY;..\HARDWARE\LED;..\HARDWARE\MOTOR;..\HARDWARE\TIMER;..\HARDWARE\COMMUNICARION;..\HARDWARE\ERROR;..\HARDWARE\ROUTE;..\HARDWARE\MPU6050;..\HARDWARE\uart3;..\HARDWARE\EXTI;..\HARDWARE\PCA9685;..\HARDWARE\IIC</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -670,6 +670,16 @@
               <FileName>exti.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\HARDWARE\EXTI\exti.c</FilePath>
+            </File>
+            <File>
+              <FileName>myiic.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\IIC\myiic.c</FilePath>
+            </File>
+            <File>
+              <FileName>pca9685.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\PCA9685\pca9685.c</FilePath>
             </File>
           </Files>
         </Group>
